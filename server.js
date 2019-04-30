@@ -66,14 +66,11 @@ app.get('/movie', (request, response) => {
         if(!valid.includes(country)){
             response.status(404).send('error not a country');
         }
-
         output = output.filter(item => item.country.toLowerCase().includes(country.toLowerCase()));
     }
 
     if(avg_vote){
-
         output = output.filter(item => item.avg_vote >= avg_vote);
-
     }
 
     if(output.length === 0 ){
