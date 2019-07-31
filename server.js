@@ -17,7 +17,7 @@ let countries = MOVIES.reduce((acc, curr) => {
     return acc.includes(curr.country.toLowerCase()) ? acc : [...acc,curr.country.toLowerCase()];
 },[]);
     
-console.log(countries)
+// console.log(countries)
 
 const app = express();
 
@@ -40,7 +40,7 @@ app.use(function validateBearerToken(req, res, next) {
     next();
 });
 
-console.log(process.env.API_KEY);
+// console.log(process.env.API_KEY);
 
 app.get('/movie', (request, response) => {
     const query = request.query;
@@ -52,10 +52,16 @@ app.get('/movie', (request, response) => {
     let output= MOVIES;
 
     if(genre){
-        
         const valid = genres;
-        if(!valid.includes(genre)){
-            response.status(404).send('error not a genre');
+        let selected = valid.filter(gen => {
+           if(gen.toLowerCase().includes(genre)){
+               return gen;
+           }
+        })
+
+        // console.log(selected)
+        if(!selected[0]){
+            return response.status(404).send('error no genre available');
         }
 
         output = output.filter(item => item.genre.toLowerCase().includes(genre.toLowerCase()));
@@ -63,8 +69,14 @@ app.get('/movie', (request, response) => {
 
     if(country){
         const valid = countries;
-        if(!valid.includes(country)){
-            response.status(404).send('error not a country');
+        let selected = valid.filter(cntry => {
+            if(cntry.toLowerCase().includes(country)){
+                return cntry;
+            }
+         })
+        //  console.log(selected)
+         if(!selected[0]){
+            return response.status(404).send('error no country available');
         }
         output = output.filter(item => item.country.toLowerCase().includes(country.toLowerCase()));
     }
@@ -74,9 +86,9 @@ app.get('/movie', (request, response) => {
     }
 
     if(output.length === 0 ){
-        response.status(404).json('no entries found');
+        return response.status(404).json('no entries found');
     }
-    response.status(200).json(output);
+    return response.status(200).json(output);
 });
 
 
